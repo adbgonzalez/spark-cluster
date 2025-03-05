@@ -1,0 +1,104 @@
+services:
+  master:
+    image: adbgonzalez/hadoop-spark
+    container_name: spark-master
+    environment:
+      - SPARK_ROLE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+
+    ports:
+      - "8081:8080"  # Puerto para la interfaz web de Spark
+      - "4041:4040"
+      - "7077:7077"
+      - "18080:18080"
+    volumes:
+      - ./spark_data:/opt/spark/spark_data
+      - ./spark-logs:/opt/spark/logs
+    networks:
+      - network_cluster
+  worker-1:
+    image: adbgonzalez/hadoop-spark
+    container_name: spark-worker-1
+    environment:
+      - SPARK_ROLE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+      - SPARK_EVENTLOG_ENABLED=true
+      - SPARK_EVENTLOG_DIR=/opt/spark/logs/history
+    volumes:
+      - ./spark_data:/opt/spark/spark_data
+      - ./spark-logs:/opt/spark/logs
+    ports:
+      - "8082:8080"  # Puerto para la interfaz web de Spark
+ 
+    depends_on:
+      - master
+    networks:
+      - network_cluster
+  worker-2:
+    image: adbgonzalez/hadoop-spark
+    container_name: spark-worker-2
+    environment:
+      - SPARK_ROLE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+      - SPARK_EVENTLOG_ENABLED=true
+      - SPARK_EVENTLOG_DIR=/opt/spark/logs/history
+    volumes:
+      - ./spark_data:/opt/spark/spark_data
+      - ./spark-logs:/opt/spark/logs
+    ports:
+      - "8083:8080"  # Puerto para la interfaz web de Spark
+ 
+    depends_on:
+      - master
+    networks:
+      - network_cluster
+
+  jupyter-notebook:
+    image: adbgonzalez/spark-notebook:3.5.5  # Aquí usamos la nueva imagen
+    container_name: jupyter-notebook
+    ports:
+      - "8888:8888"  # Puerto para Jupyter
+      - "9999:9999"
+      - "4042:4040"
+      - "18082:18080"
+    networks:
+      - network_cluster
+    environment:
+      - SPARK_EVENTLOG_ENABLED=true
+      - SPARK_EVENTLOG_DIR=/opt/spark/logs/history
+      - GRANT_SUDO=yes
+      - NOTEBOOK_ARGS=--allow-root
+      - SPARK_MASTER_URL=spark://spark-master:7077  # Conectar con el master
+    user: root
+    volumes:
+      - ./work:/home/jovyan/work  # Montamos el directorio de trabajo
+      - ./spark-logs:/opt/spark/logs
+
+    depends_on:
+      - master  # Espera a que el master esté disponible antes de iniciarse
+
+
+volumes:
+  spark_data:
+networks:
+  network_cluster:
+
+
