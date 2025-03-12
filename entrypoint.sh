@@ -34,11 +34,13 @@ if [ "$SPARK_ROLE" == "master" ];
 then
 	  /opt/spark/sbin/start-master.sh -p 7077 
     /opt/spark/sbin/start-history-server.sh 
+    /bin/bash /start-hdfs.sh
 elif [ "$SPARK_ROLE" == "worker" ];
 then
   echo "antes de iniciar el worker"
   /opt/spark/sbin/start-worker.sh spark://spark-master:7077 
-  echo "después de iniciar el workder"
+  hdfs datanode
+  echo "después de iniciar el worker"
 elif [ "$SPARK_ROLE" == "history" ]
 then
   /opt/spark/sbin/start-history-server.sh 

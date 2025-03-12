@@ -1,0 +1,74 @@
+version: '3'
+services:
+  master:
+    image: adrian/spark:3.5
+    container_name: spark-master
+    environment:
+      - SPARK_ROLE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+
+    ports:
+      - "8081:8080"  # Puerto para la interfaz web de Spark
+      - "4041:4040"
+      - "7077:7077"
+      - "18080:18080"
+    volumes:
+      - ./spark_data:/opt/spark/spark_data
+    networks:
+      - network_cluster
+  worker:
+    image: adrian/spark:3.5
+    environment:
+      - SPARK_ROLE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+
+    deploy:
+      replicas: 4
+      resources:
+        limits:
+          cpus: '2'
+          memory: '4G'
+        reservations:
+          cpus: '1'
+          memory: '2G'
+    volumes:
+      - ./spark_data:/opt/spark/spark_data
+    depends_on:
+      - master
+    networks:
+      - network_cluster
+
+  jupyter-notebook:
+    image: jupyter/all-spark-notebook
+    container_name: jupyter-notebook
+    ports:
+      - "8888:8888"
+      - "9999:9999"
+    networks:
+      - network_cluster
+    environment:
+      - GRANT_SUDO=yes
+      - NOTEBOOK_ARGS=--allow-root
+    user: root
+    volumes:
+      - ./work:/home/jovyan/work
+
+
+
+volumes:
+  spark_data:
+networks:
+  network_cluster:
+
+
