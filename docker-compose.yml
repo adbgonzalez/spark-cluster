@@ -19,7 +19,6 @@ services:
       - "9000:9000"
     volumes:
       - ./spark_data:/opt/spark/spark_data
-      - ./spark-logs:/opt/spark/logs
       - ./namenode_data:/usr/local/hadoop/data/namenode/
       - ./start-hdfs.sh:/start-hdfs.sh
     networks:
@@ -41,7 +40,6 @@ services:
       - SPARK_EVENTLOG_DIR=/opt/spark/logs/history
     volumes:
       - ./spark_data:/opt/spark/spark_data
-      - ./spark-logs:/opt/spark/logs
       - ./datanode1_data:/usr/local/hadoop/data/datanode/
     ports:
       - "8082:8080"  # Puerto para la interfaz web de Spark
@@ -68,7 +66,6 @@ services:
       - SPARK_EVENTLOG_DIR=/opt/spark/logs/history
     volumes:
       - ./spark_data:/opt/spark/spark_data
-      - ./spark-logs:/opt/spark/logs
       - ./datanode2_data:/usr/local/hadoop/data/datanode/
     ports:
       - "8083:8080"  # Puerto para la interfaz web de Spark
@@ -90,16 +87,14 @@ services:
       - network_cluster
     environment:
       - SPARK_EVENTLOG_ENABLED=true
-      - SPARK_EVENTLOG_DIR=/opt/spark/logs/history
+      - SPARK_EVENTLOG_DIR=hdfs:///spark/logs/history
       - GRANT_SUDO=yes
       - NOTEBOOK_ARGS=--allow-root
       - SPARK_MASTER_URL=spark://spark-master:7077  # Conectar con el master
       - SHELL=/bin/bash
       - HADOOP_HOME=/opt/hadoop
-    user: root
     volumes:
       - ./work:/home/jovyan/work  # Montamos el directorio de trabajo
-      - ./spark-logs:/opt/spark/logs
 
     depends_on:
       - master  # Espera a que el master esté disponible antes de iniciarse

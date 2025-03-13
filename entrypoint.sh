@@ -32,9 +32,16 @@ echo "SPARK_ROLE: $SPARK_ROLE"
 
 if [ "$SPARK_ROLE" == "master" ];
 then
-	  /opt/spark/sbin/start-master.sh -p 7077 
-    /opt/spark/sbin/start-history-server.sh 
     /bin/bash /start-hdfs.sh
+    echo "*****Después de iniciar hdfs"
+    until hdfs dfsadmin -safemode get | grep -q "Safe mode is OFF"; do
+      echo "Esperando a que HDFS esté listo..."
+      sleep 5
+    done
+	  /opt/spark/sbin/start-master.sh -p 7077 
+    echo "*****Después de iniciar spark-master"
+    /opt/spark/sbin/start-history-server.sh 
+    echo "*****Después de iniciar history-server"
 elif [ "$SPARK_ROLE" == "worker" ];
 then
   echo "antes de iniciar el worker"

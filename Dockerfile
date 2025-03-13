@@ -67,15 +67,15 @@ RUN wget -q $SPARK_URL   && \
 
 # variables de entorno
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-ENV LD_LIBRARY_PATH=$HADOOP_HOME/lib/native:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 
 ENV SPARK_HOME=/opt/spark 
 ENV SPARK_VERSION=3.5.0
 ENV SPARK_CONF=${SPARK_HOME}/conf 
-ENV SPARK_LOG_DIR=/var/log/spark 
+ENV SPARK_LOG_DIR=hdfs:///spark/logs 
 ENV SPARK_HISTORY_UI_PORT=18080 
 ENV SPARK_EVENTLOG_ENABLED=true 
-ENV SPARK_HISTORY_FS_LOG_DIRECTORY=/opt/spark/logs/history 
+ENV SPARK_HISTORY_FS_LOG_DIRECTORY=hdfs:///spark/logs/history 
 ENV SPARK_EVENT_LOG_DIR=$SPARK_HISTORY_FS_LOG_DIRECTORY 
 ENV SPARK_DAEMON_MEMORY=10g 
 ENV SPARK_HISTORY_FS_CLEANER_ENABLED=true 
@@ -134,6 +134,7 @@ RUN chmod +x /entrypoint.sh
 WORKDIR /opt/spark
 
 # Comando por defecto al iniciar el contenedor (puedes cambiarlo según tus necesidades)
-CMD /bin/bash -c '/entrypoint.sh'
+CMD ["/bin/bash", "-c", "/entrypoint.sh"]
+
 
 #CMD /bin/bash -c yes
