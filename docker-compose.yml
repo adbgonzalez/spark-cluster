@@ -96,6 +96,7 @@ services:
       - SPARK_MASTER_URL=spark://spark-master:7077  # Conectar con el master
       - SHELL=/bin/bash
       - HADOOP_HOME=/opt/hadoop
+    user: root
     volumes:
       - ./work:/home/jovyan/work  # Montamos el directorio de trabajo
       - ./spark-logs:/opt/spark/logs
