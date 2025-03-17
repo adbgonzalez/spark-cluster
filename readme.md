@@ -7,11 +7,6 @@ Aunque las imágines están en Docker Hub pueden generarse de la siguiente forma
 - cd work
 - git clone https://github.com/adbgonzalez/curso-spark.git .
 
-## Crear directorio data
-- mkdir data
-- cd data
-- git clone https://github.com/adbgonzaelz/data-spark.git .
-
 ## Lanzar el clúster
 - docker compose up -d
 - docker compose logs jupyter-notebook # Obtener el token de conexión
