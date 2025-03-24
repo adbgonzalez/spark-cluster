@@ -7,8 +7,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 # Instalamos JupyterLab y PySpark 3.5.5
-RUN pip install --upgrade pip && \
-    pip install jupyterlab pyspark==3.5.5 
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install pandas && \
+    python3 -m pip install matplotlive && \
+    python3 -m pip install seaborn && \
+    python3 -m pip install jupyterlab pyspark==3.5.5  
 
 # Creamos un usuario jovyan para Jupyter con permisos adecuados
 RUN useradd -m -s /bin/bash jovyan && \

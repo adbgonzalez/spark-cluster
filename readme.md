@@ -10,3 +10,5 @@ Aunque las imágines están en Docker Hub pueden generarse de la siguiente forma
 ## Lanzar el clúster
 - docker compose up -d
 - docker compose logs jupyter-notebook # Obtener el token de conexión
+Abrir un terminal y copiar el directorio data en HDFS:
+- hdfs dfs -put /home/jovyan/work/data/* /user/jovyan/data
